@@ -40,7 +40,6 @@ class _ListenLocationState extends State<ListenLocationWidget> {
         accuracy = _location!.accuracy.toString();
 
         sendInfo();
-        print('$_location');
       });
     });
   }
