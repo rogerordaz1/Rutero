@@ -39,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final Location location = Location();
   // ignore: unused_field
   String? _error;
-  bool? _enabled;
   bool? _serviceEnabled;
 
   @override
@@ -189,34 +188,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const Divider(height: 30),
-              // Container(
-              //   decoration: const BoxDecoration(
-              //     borderRadius: BorderRadius.all(Radius.circular(8)),
-              //     boxShadow: [
-              //       BoxShadow(
-              //           color: Color.fromRGBO(244, 242, 250, 1),
-              //           spreadRadius: 2,
-              //           blurRadius: 2)
-              //     ],
-              //   ),
-              //   height: 80,
-              //   width: MediaQuery.of(context).size.width * 0.85,
-              //   child: SwitchListTile(
-              //     title: const Text('Ubicación en segundo plano'),
-              //     value: _lights2,
-              //     onChanged: (bool value) {
-              //       if (_enabled == true) {
-              //         value = true;
-              //       } else {
-              //         setState(() {
-              //           _toggleBackgroundMode();
-              //           _lights2 = value;
-              //         });
-              //       }
-              //     },
-              //     secondary: const Icon(Icons.location_on_outlined),
-              //   ),
-              // ),
               const Divider(height: 30),
               const ListenLocationWidget(),
             ],

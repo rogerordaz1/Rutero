@@ -48,10 +48,6 @@ class _ListenLocationState extends State<ListenLocationWidget> {
     );
   }
 
-  Future<void> _stopListen() async {
-    _locationSubscription.cancel();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
