@@ -35,13 +35,17 @@ class _ListenLocationState extends State<ListenLocationWidget> {
         _error = null;
 
         _location = currentLocation;
-        latitud = _location!.latitude.toString();
-        longitud = _location!.longitude.toString();
-        accuracy = _location!.accuracy.toString();
-
-        sendInfo();
+        if (_location!.accuracy! <= 5) {
+          latitud = _location!.latitude.toString();
+          longitud = _location!.longitude.toString();
+          accuracy = _location!.accuracy.toString();
+          sendInfo();
+        }
       });
     });
+    location.changeNotificationOptions(
+      title: "Localización en segundo plano Activada",
+    );
   }
 
   Future<void> _stopListen() async {
@@ -68,7 +72,7 @@ class _ListenLocationState extends State<ListenLocationWidget> {
               scale: 5,
             ),
             onPressed: () => {
-              requestPermission(),
+              _toggleBackgroundMode(),
               _listenLocation(),
             },
           ),

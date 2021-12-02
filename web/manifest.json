@@ -1,6 +1,6 @@
 {
-    "name": "location_example",
-    "short_name": "location_example",
+    "name": "rutero",
+    "short_name": "rutero",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,4 +1,4 @@
-package com.example.location_example
+package com.upr.rutero
 
 import io.flutter.embedding.android.FlutterActivity
 
