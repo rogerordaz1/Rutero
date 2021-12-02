@@ -187,8 +187,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   secondary: const Icon(Icons.my_location),
                 ),
               ),
-              const Divider(height: 30),
-              const Divider(height: 30),
+              const SizedBox(
+                height: 100,
+              ),
               const ListenLocationWidget(),
             ],
           ),
