@@ -80,7 +80,7 @@ class _ListenLocationState extends State<ListenLocationWidget> {
   var url = Uri.parse('http://152.206.177.70:1337/ubicacions');
   void sendInfo() async {
     await http.post(url, body: {
-      'imei': '53519709',
+      'imei': '011010',
       'ubicacion': '$latitud,$longitud*${accuracy.toString()}',
       'ip': ''
     });
