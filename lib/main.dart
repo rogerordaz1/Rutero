@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'listen_location.dart';
-import 'package:flutter/services.dart';
 
 void main() => runApp(const MyApp());
 
@@ -36,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   PermissionStatus? _permissionGranted;
-  bool lights = false, _lights1 = false, _lights2 = false;
+  bool lights = false, _lights1 = false;
   final Location location = Location();
   // ignore: unused_field
   String? _error;
@@ -45,10 +44,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _checkPermissions();
-    _checkBackgroundMode();
-    _checkService();
     super.initState();
+    _checkService();
+    _checkPermissions();
   }
 
   Future<void> _checkService() async {
@@ -74,39 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
     }
-  }
-
-  Future<void> _toggleBackgroundMode() async {
-    setState(() {
-      _error = null;
-    });
-    try {
-      final bool result =
-          await location.enableBackgroundMode(enable: !(_enabled ?? false));
-      setState(() {
-        _enabled = result;
-        if (_enabled == false) {
-          _lights2 = false;
-        }
-      });
-    } on PlatformException catch (err) {
-      setState(() {
-        _error = err.code;
-      });
-    }
-  }
-
-  Future<void> _checkBackgroundMode() async {
-    setState(() {
-      _error = null;
-    });
-    final bool result = await location.isBackgroundModeEnabled();
-    setState(() {
-      _enabled = result;
-      if (_enabled == true) {
-        _lights2 = true;
-      }
-    });
   }
 
   Future<void> _checkPermissions() async {
