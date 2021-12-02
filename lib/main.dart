@@ -76,25 +76,25 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Future<void> _toggleBackgroundMode() async {
-  //   setState(() {
-  //     _error = null;
-  //   });
-  //   try {
-  //     final bool result =
-  //         await location.enableBackgroundMode(enable: !(_enabled ?? false));
-  //     setState(() {
-  //       _enabled = result;
-  //       if (_enabled == false) {
-  //         _lights2 = false;
-  //       }
-  //     });
-  //   } on PlatformException catch (err) {
-  //     setState(() {
-  //       _error = err.code;
-  //     });
-  //   }
-  // }
+  Future<void> _toggleBackgroundMode() async {
+    setState(() {
+      _error = null;
+    });
+    try {
+      final bool result =
+          await location.enableBackgroundMode(enable: !(_enabled ?? false));
+      setState(() {
+        _enabled = result;
+        if (_enabled == false) {
+          _lights2 = false;
+        }
+      });
+    } on PlatformException catch (err) {
+      setState(() {
+        _error = err.code;
+      });
+    }
+  }
 
   Future<void> _checkBackgroundMode() async {
     setState(() {
