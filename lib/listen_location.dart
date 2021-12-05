@@ -24,6 +24,7 @@ class _ListenLocationState extends State<ListenLocationWidget> {
   bool? _enabled;
 
   Future<void> _listenLocation() async {
+    location.changeSettings(accuracy: LocationAccuracy.navigation);
     _locationSubscription =
         location.onLocationChanged.handleError((dynamic err) {
       setState(() {
@@ -39,6 +40,7 @@ class _ListenLocationState extends State<ListenLocationWidget> {
           latitud = _location!.latitude.toString();
           longitud = _location!.longitude.toString();
           accuracy = _location!.accuracy.toString();
+
           sendInfo();
         }
       });
