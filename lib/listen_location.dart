@@ -36,13 +36,13 @@ class _ListenLocationState extends State<ListenLocationWidget> {
         _error = null;
 
         _location = currentLocation;
-        if (_location!.accuracy! <= 5) {
-          latitud = _location!.latitude.toString();
-          longitud = _location!.longitude.toString();
-          accuracy = _location!.accuracy.toString();
+        //  if (_location!.accuracy! <= 30) {
+        latitud = _location!.latitude.toString();
+        longitud = _location!.longitude.toString();
+        accuracy = _location!.accuracy.toString();
 
-          sendInfo();
-        }
+        sendInfo();
+        //     }
       });
     });
     location.changeNotificationOptions(

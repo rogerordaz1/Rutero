@@ -1,4 +1,4 @@
-package com.upr.rutero
+package com.upr.georuta
 
 import io.flutter.embedding.android.FlutterActivity
 
