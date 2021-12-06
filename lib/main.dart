@@ -16,11 +16,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Rutero',
+      title: 'GeoRuta',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Rutero'),
+      home: const MyHomePage(title: 'GeoRuta'),
     );
   }
 }
