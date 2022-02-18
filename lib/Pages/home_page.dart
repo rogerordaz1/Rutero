@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
+import 'package:reoruta/services/gps_service.dart';
 
 import 'listen_location.dart';
 
@@ -19,20 +21,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _checkService();
-    _checkPermissions();
+    // _checkService();
+    //  _checkPermissions();
     super.initState();
   }
 
-  Future<void> _checkService() async {
-    final bool serviceEnabledResult = await location.serviceEnabled();
-    setState(() {
-      _serviceEnabled = serviceEnabledResult;
-      if (_serviceEnabled == true) {
-        lights = true;
-      }
-    });
-  }
+  // Future<void> _checkService() async {
+  //   final bool serviceEnabledResult = await location.serviceEnabled();
+  //   setState(() {
+  //     _serviceEnabled = serviceEnabledResult;
+  //     if (_serviceEnabled == true) {
+  //       lights = true;
+  //     }
+  //   });
+  // }
 
   Future<void> _requestService() async {
     if (_serviceEnabled == null || !_serviceEnabled!) {
@@ -75,6 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final gpsService = Provider.of<GpsService>(context);
+
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 255, 255, 0.9),
       appBar: AppBar(
@@ -118,20 +122,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 height: 80,
                 width: MediaQuery.of(context).size.width * 0.85,
-                child: SwitchListTile(
-                  title: const Text('Estado de la Ubicación'),
-                  value: lights,
-                  onChanged: (bool value) {
-                    if (_serviceEnabled == true) {
-                      value = true;
-                    } else {
-                      setState(() {
-                        _requestService();
-                        lights = value;
-                      });
-                    }
-                  },
-                  secondary: const Icon(Icons.location_on),
+                child: ListTile(
+                  leading: const Icon(Icons.location_on),
+                  title: const Text('Estado del Servicio'),
+                  subtitle: (gpsService.isGpsEnabled)
+                      ? const Text("servicio activado")
+                      : const Text('Servicio desactivado'),
+                  trailing: IconButton(
+                    splashColor: Colors.blue,
+                    onPressed: () {},
+                    icon: (gpsService.isGpsEnabled)
+                        ? const Icon(Icons.airplanemode_active_sharp)
+                        : const Icon(Icons.airplanemode_inactive_sharp),
+                  ),
                 ),
               ),
               const Divider(height: 30),
@@ -147,20 +150,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 height: 80,
                 width: MediaQuery.of(context).size.width * 0.85,
-                child: SwitchListTile(
-                  title: const Text('Permiso de Ubicación '),
-                  value: _lights1,
-                  onChanged: (bool value) {
-                    if (_permissionGranted == PermissionStatus.granted) {
-                      value = true;
-                    } else {
-                      setState(() {
-                        _requestPermission();
-                        _lights1 = value;
-                      });
-                    }
-                  },
-                  secondary: const Icon(Icons.my_location),
+                child: ListTile(
+                  leading: const Icon(Icons.location_on),
+                  title: const Text('Estado del Permiso'),
+                  subtitle: (gpsService.isGpsPermissionEnabled)
+                      ? const Text("Permiso activado")
+                      : const Text('Permiso desactivado'),
+                  trailing: IconButton(
+                    splashColor: Colors.blue,
+                    onPressed: () {},
+                    icon: (gpsService.isGpsPermissionEnabled)
+                        ? const Icon(Icons.airplanemode_active_sharp)
+                        : const Icon(Icons.airplanemode_inactive_sharp),
+                  ),
                 ),
               ),
               const SizedBox(

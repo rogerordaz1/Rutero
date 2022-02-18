@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:reoruta/services/gps_service.dart';
 import 'Pages/home_page.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  //Provider.debugCheckInvalidValueType = null;
+
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<GpsService>(
+        create: (_) => GpsService(),
+        lazy: false,
+      )
+    ],
+    child: const MyApp(),
+  ));
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
