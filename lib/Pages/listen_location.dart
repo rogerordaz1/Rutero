@@ -1,8 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:reoruta/services/gps_service.dart';
+import 'package:reoruta/services/location_provider.dart';
 
 class ListenLocationWidget extends StatefulWidget {
   const ListenLocationWidget({Key? key}) : super(key: key);
@@ -12,106 +11,57 @@ class ListenLocationWidget extends StatefulWidget {
 }
 
 class _ListenLocationState extends State<ListenLocationWidget> {
-  PermissionStatus? _permissionGranted;
-  final Location location = Location();
-
-  LocationData? _location;
-  late StreamSubscription<LocationData> _locationSubscription;
-  String? _error;
-  String latitud = '';
-  String longitud = '';
-  String accuracy = '';
-  bool? _enabled;
-
-  Future<void> _listenLocation() async {
-    location.changeSettings(accuracy: LocationAccuracy.navigation);
-    _locationSubscription =
-        location.onLocationChanged.handleError((dynamic err) {
-      setState(() {
-        _error = err.code;
-      });
-      _locationSubscription.cancel();
-    }).listen((LocationData currentLocation) {
-      setState(() {
-        _error = null;
-
-        _location = currentLocation;
-        //  if (_location!.accuracy! <= 30) {
-        latitud = _location!.latitude.toString();
-        longitud = _location!.longitude.toString();
-        accuracy = _location!.accuracy.toString();
-
-        sendInfo();
-        //     }
-      });
-    });
-    location.changeNotificationOptions(
-      title: "Localización en segundo plano Activada",
-    );
+  @override
+  void dispose() {
+    final locationProvider = Provider.of<LocationProvider>(context);
+    locationProvider.stopLocationStream();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Ubicacion en Tiempo real: ' +
-              (_error ?? '${_location ?? "Desconocido"}'),
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-        const Divider(
-          height: 20,
-        ),
-        Center(
-          child: FloatingActionButton(
-            child: Image.asset(
-              'assets/logo_boton1.png',
-              scale: 5,
+    final gpsService = Provider.of<GpsService>(context);
+    final locationProvider = Provider.of<LocationProvider>(context);
+    return FutureBuilder(
+      future: gpsService.isGpsPermission(),
+      builder: (context, snapshot) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Latitud en tiempo real es ${locationProvider.latitud} '),
+            Text('Longitud en tiempo real es ${locationProvider.longitud} '),
+            const Divider(
+              height: 20,
             ),
-            onPressed: () => {
-              _toggleBackgroundMode(),
-              _listenLocation(),
-            },
-          ),
-        )
-      ],
+            Center(
+              child: (!gpsService.isGpsEnabled)
+                  ? FloatingActionButton(
+                      backgroundColor: Colors.grey,
+                      child: const Text('OFF'),
+                      onPressed: () => {},
+                    )
+                  : FloatingActionButton(
+                      child: Image.asset(
+                        'assets/logo_boton1.png',
+                        scale: 5,
+                      ),
+                      onPressed: () async {
+                        if (gpsService.isGpsPermissionEnabled &&
+                            gpsService.isGpsPermissionBackGoundEnabled) {
+                          locationProvider.getCurrentPosition();
+                          locationProvider.startStreamLocation();
+                          locationProvider.toggleBackgroundMode();
+                        } else {
+                          await gpsService.askGpsAccess();
+                          locationProvider.toggleBackgroundMode();
+                          locationProvider.startStreamLocation();
+                        }
+                      },
+                    ),
+            )
+          ],
+        );
+      },
     );
-  }
-
-  var url = Uri.parse('http://152.206.177.70:1338/ubicacions');
-  void sendInfo() async {
-    await http.post(url, body: {
-      'imei': '011010',
-      'ubicacion': '$latitud,$longitud*${accuracy.toString()}',
-      'ip': ''
-    });
-  }
-
-  Future<void> requestPermission() async {
-    if (_permissionGranted != PermissionStatus.granted) {
-      final PermissionStatus permissionRequestedResult =
-          await location.requestPermission();
-      setState(() {
-        _permissionGranted = permissionRequestedResult;
-      });
-    }
-  }
-
-  Future<void> _toggleBackgroundMode() async {
-    setState(() {
-      _error = null;
-    });
-    try {
-      final bool result =
-          await location.enableBackgroundMode(enable: !(_enabled ?? false));
-      setState(() {
-        _enabled = result;
-      });
-    } on PlatformException catch (err) {
-      setState(() {
-        _error = err.code;
-      });
-    }
   }
 }

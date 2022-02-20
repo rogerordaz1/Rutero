@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reoruta/services/gps_service.dart';
+import 'package:reoruta/services/location_provider.dart';
 import 'Pages/home_page.dart';
 
-void main() {
+void main() async {
   //Provider.debugCheckInvalidValueType = null;
 
   runApp(MultiProvider(
@@ -11,7 +12,11 @@ void main() {
       ChangeNotifierProvider<GpsService>(
         create: (_) => GpsService(),
         lazy: false,
-      )
+      ),
+      ChangeNotifierProvider<LocationProvider>(
+        create: (_) => LocationProvider(),
+        lazy: false,
+      ),
     ],
     child: const MyApp(),
   ));

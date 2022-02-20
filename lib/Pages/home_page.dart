@@ -14,65 +14,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PermissionStatus? _permissionGranted;
-  bool lights = false, _lights1 = false;
   final Location location = Location();
-  bool? _serviceEnabled;
 
   @override
-  void initState() {
-    // _checkService();
-    //  _checkPermissions();
-    super.initState();
-  }
+  void dispose() {
+    final gpsService = Provider.of<GpsService>(context);
+    gpsService.stopgetServiceStatusStream();
 
-  // Future<void> _checkService() async {
-  //   final bool serviceEnabledResult = await location.serviceEnabled();
-  //   setState(() {
-  //     _serviceEnabled = serviceEnabledResult;
-  //     if (_serviceEnabled == true) {
-  //       lights = true;
-  //     }
-  //   });
-  // }
-
-  Future<void> _requestService() async {
-    if (_serviceEnabled == null || !_serviceEnabled!) {
-      final bool serviceRequestedResult = await location.requestService();
-      setState(() {
-        _serviceEnabled = serviceRequestedResult;
-        if (_serviceEnabled == false) {
-          lights = false;
-        }
-      });
-      if (!serviceRequestedResult) {
-        return;
-      }
-    }
-  }
-
-  Future<void> _checkPermissions() async {
-    final PermissionStatus permissionGrantedResult =
-        await location.hasPermission();
-    setState(() {
-      _permissionGranted = permissionGrantedResult;
-      if (_permissionGranted == PermissionStatus.granted) {
-        _lights1 = true;
-      }
-    });
-  }
-
-  Future<void> _requestPermission() async {
-    if (_permissionGranted != PermissionStatus.granted) {
-      final PermissionStatus permissionRequestedResult =
-          await location.requestPermission();
-      setState(() {
-        _permissionGranted = permissionRequestedResult;
-        if (_permissionGranted != PermissionStatus.granted) {
-          _lights1 = false;
-        }
-      });
-    }
+    super.dispose();
   }
 
   @override
@@ -122,19 +71,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 height: 80,
                 width: MediaQuery.of(context).size.width * 0.85,
-                child: ListTile(
-                  leading: const Icon(Icons.location_on),
-                  title: const Text('Estado del Servicio'),
-                  subtitle: (gpsService.isGpsEnabled)
-                      ? const Text("servicio activado")
-                      : const Text('Servicio desactivado'),
-                  trailing: IconButton(
-                    splashColor: Colors.blue,
-                    onPressed: () {},
-                    icon: (gpsService.isGpsEnabled)
-                        ? const Icon(Icons.airplanemode_active_sharp)
-                        : const Icon(Icons.airplanemode_inactive_sharp),
-                  ),
+                child: FutureBuilder(
+                  future: gpsService.init(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    return ListTile(
+                      leading: const Icon(Icons.location_on),
+                      title: const Text('Estado del Servicio'),
+                      subtitle: (gpsService.isGpsEnabled)
+                          ? const Text("servicio activado")
+                          : const Text('Servicio desactivado'),
+                      trailing: IconButton(
+                        splashColor: Colors.blue,
+                        onPressed: (gpsService.isGpsEnabled) ? () {} : () {},
+                        icon: (gpsService.isGpsEnabled)
+                            ? const Icon(Icons.airplanemode_active_sharp)
+                            : const Icon(Icons.airplanemode_inactive_sharp),
+                      ),
+                    );
+                  },
                 ),
               ),
               const Divider(height: 30),
@@ -150,19 +105,71 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 height: 80,
                 width: MediaQuery.of(context).size.width * 0.85,
-                child: ListTile(
-                  leading: const Icon(Icons.location_on),
-                  title: const Text('Estado del Permiso'),
-                  subtitle: (gpsService.isGpsPermissionEnabled)
-                      ? const Text("Permiso activado")
-                      : const Text('Permiso desactivado'),
-                  trailing: IconButton(
-                    splashColor: Colors.blue,
-                    onPressed: () {},
-                    icon: (gpsService.isGpsPermissionEnabled)
-                        ? const Icon(Icons.airplanemode_active_sharp)
-                        : const Icon(Icons.airplanemode_inactive_sharp),
-                  ),
+                child: FutureBuilder(
+                  future: gpsService.isGpsPermission(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    return ListTile(
+                      leading: const Icon(Icons.location_on),
+                      title: const Text('Estado del Permiso'),
+                      subtitle: (gpsService.isGpsPermissionEnabled)
+                          ? const Text("Permiso activado")
+                          : const Text('Permiso desactivado'),
+                      trailing: IconButton(
+                        splashColor: Colors.blue,
+                        onPressed: () {
+                          gpsService.askGpsAccess();
+                        },
+                        icon: (gpsService.isGpsPermissionEnabled)
+                            ? const Icon(Icons.airplanemode_active_sharp)
+                            : const Icon(Icons.airplanemode_inactive_sharp),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const Divider(height: 30),
+              Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Color.fromRGBO(244, 242, 250, 1),
+                        spreadRadius: 2,
+                        blurRadius: 2)
+                  ],
+                ),
+                height: 100,
+                width: MediaQuery.of(context).size.width * 0.85,
+                child: FutureBuilder(
+                  future: gpsService.isGpsPermission(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Center(child: Text("Estado de la Ubicacion")),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                              'Segundo Plano : ${gpsService.isGpsPermissionBackGoundEnabled}',
+                              style: const TextStyle(fontSize: 18)),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                              "Primer Plano : ${gpsService.isGpsPermissionEnabled}",
+                              style: const TextStyle(fontSize: 18)),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               const SizedBox(
